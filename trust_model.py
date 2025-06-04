@@ -1,5 +1,5 @@
 
-DEFAULT_TRUST = 0.3
+DEFAULT_TRUST = 0.15
 
 def guard_security(client_country, guards, trust_map):
     scores = []
