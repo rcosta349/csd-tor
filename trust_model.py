@@ -2,9 +2,17 @@ def guard_security(client_country, guards, trust_map):
     scores = []
     for guard in guards:
         country = guard.get("country")
+
+        # Obtemos o grau de confiança no país do guard
         trust = trust_map.get(country, 0)
+
+        # Diminuimos a Trust se o cliente e o guard estão no mesmo país
+        if country == client_country:
+            trust -= 0.5
+
         scores.append((guard, trust))
     return scores
+
 
 def exit_security(client_country, dest_country, guard, exit_node, trust_map):
     # Evita países em comum entre client→guard e exit→destination

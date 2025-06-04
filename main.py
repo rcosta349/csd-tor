@@ -6,10 +6,10 @@ import json
 def main():
     relays = load_json_file("data/tor_consensus.json")
     config = load_json_file("data/Project2ClientInput.json")
-    alliances = config["alliances"]
+    alliances = config["Alliances"]
     trust_map = {c: v for group in alliances for c, v in group.items()}
-    client_ip = config["client"]
-    dest_ip = config["destination"]
+    client_ip = config["Client"]
+    dest_ip = config["Destination"]
 
     # GeoIP setup
     reader = geoip2.database.Reader("GeoLite2-Country.mmdb")
