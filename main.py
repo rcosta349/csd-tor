@@ -23,7 +23,7 @@ def main():
     relays = load_json_file("data/tor_consensus.json")
     config = load_json_file("data/Project2ClientInput.json")
     alliances = config["Alliances"]
-    trust_map = {c: v for group in alliances for c, v in group.items()}
+
     client_ip = config["Client"]
     dest_ip = config["Destination"]
 
@@ -36,7 +36,7 @@ def main():
     for r in relays:
         r["country"] = get_country(r["ip"], reader)
 
-    path = select_path(relays, trust_map, client_country, dest_country, GUARD_PARAMS, EXIT_PARAMS)
+    path = select_path(relays, alliances, client_country, dest_country, GUARD_PARAMS, EXIT_PARAMS)
 
     with open("output/selected_path.json", "w") as f:
         json.dump(path, f, indent=2)
