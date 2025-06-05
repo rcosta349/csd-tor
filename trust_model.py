@@ -11,7 +11,7 @@ def guard_security(client_country, guards, trust_map):
 
         # Diminuimos a Trust se o cliente e o guard estão no mesmo país
         if country == client_country:
-            trust -= 0.3
+            trust -= 0.15
 
         scores.append((guard, trust))
     return scores
