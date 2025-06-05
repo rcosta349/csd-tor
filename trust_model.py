@@ -7,7 +7,7 @@ def guard_security(client_country, guards, trust_map):
         country = guard.get("country")
 
         # Obtemos o grau de confiança no país do guard
-        trust = trust_map.get(country, DEFAULT_TRUST)
+        trust = trust_map.get(country, 0.5)
 
         # Diminuimos a Trust se o cliente e o guard estão no mesmo país
         if country == client_country:
@@ -18,7 +18,7 @@ def guard_security(client_country, guards, trust_map):
 
 
 def exit_security(client_country, dest_country, guard, exit_node, trust_map):
-    # Evita países em comum entre client→guard e exit→destination
+    # Evita países em comum entre client → guard e exit → destination
     risk = 0
     if guard.get("country") == exit_node.get("country"):
         risk += 1

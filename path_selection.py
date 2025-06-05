@@ -20,12 +20,14 @@ def select_path(relays, trust_map, client_country, dest_country, guard_params, e
     # Exit selection com base no guard
     exit_scores = [(e, exit_security(client_country, dest_country, best_guard, e, trust_map)) for e in exits]
     try:
+        # Escolhher a melhor saida
         best_exit = categorize_and_select(exit_scores, exit_params)
     except Exception as e:
         print("Exit selection falhou: fallback para melhor score")
         best_exit = sorted(exit_scores, key=lambda x: x[1], reverse=True)[0][0]
 
     # Middle aleatório
+    # TODO: melhorar a escolha do middle
     middle = random.choice(middles)
 
     return {
