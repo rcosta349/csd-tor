@@ -85,8 +85,8 @@ def select_until_bandwidth(relays, total_bw, threshold_frac, label="", max_relay
             break
 
     #### Analise
-    avg_trust = sum(r["trust"] for r in selected) / len(selected) if selected else 0
-    print(f"[{label}] Selected {len(selected)} relays, accumulated_bw: {current_bw}, target: {threshold_frac * total_bw:.0f}, avg_trust: {avg_trust:.2f}")
+    #avg_trust = sum(r["trust"] for r in selected) / len(selected) if selected else 0
+    #print(f"[{label}] Selected {len(selected)} relays, accumulated_bw: {current_bw}, target: {threshold_frac * total_bw:.0f}, avg_trust: {avg_trust:.2f}")
     ####
     return selected if current_bw >= threshold_frac * total_bw else []
 
