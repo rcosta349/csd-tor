@@ -32,11 +32,8 @@ def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_
     exclude_fingerprints = {best_guard["fingerprint"], best_exit["fingerprint"]}
     middles = [m for m in relays if m["fingerprint"] not in exclude_fingerprints]
 
-    # Random Middle node, improving efficiency
-    middle = random.choice(middles)
+    middle = select_middle_node(middles, best_guard, best_exit)
 
-
-    #TODO antes de retornar verificar se o middle está no mesmo ASN ou familia que o guard ou exit, caso esteja escolhe outro aleatoriamente e volta a verificar, max 20 tentativas
     return {
         "guard": best_guard["fingerprint"],
         "middle": middle["fingerprint"],
@@ -94,3 +91,30 @@ def select_until_bandwidth(relays, total_bw, threshold_frac, label="", max_relay
     print(f"[{label}] Selected {len(selected)} relays, accumulated_bw: {current_bw}, target: {threshold_frac * total_bw:.0f}, avg_trust: {avg_trust:.2f}")
     ####
     return selected if current_bw >= threshold_frac * total_bw else []
+
+
+def select_middle_node(middles, best_guard, best_exit, max_attempts=15):
+    guard_asn = best_guard.get("asn")
+    exit_asn = best_exit.get("asn")
+    guard_fam = set(best_guard.get("family", []))
+    exit_fam = set(best_exit.get("family", []))
+
+    attempts = 0
+    candidate = None
+
+    while attempts < max_attempts:
+        candidate = random.choice(middles)
+        middle_asn = candidate.get("asn")
+        middle_fam = set(candidate.get("family", []))
+
+        asn_conflict = (middle_asn == guard_asn) or (middle_asn == exit_asn)
+        fam_conflict = not middle_fam.isdisjoint(guard_fam.union(exit_fam))
+
+        if not asn_conflict and not fam_conflict:
+            print("Middle candidate does not have conflict with ASN or Family of guard or exit.")
+            return candidate
+
+        attempts += 1
+
+    print("Unable to guarantee ASN/family diversity in the middle node. Using last candidate.")
+    return candidate

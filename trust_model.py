@@ -7,6 +7,7 @@ def guard_security(client_country, guards, alliances):
         guard_country = guard_relay.get("country")
         trust = DEFAULT_TRUST
 
+        # TODO compare destination/guard
         for alliance in alliances:
             countries = alliance["countries"]
 
@@ -25,6 +26,7 @@ def exit_security(client_country, dest_country, guard, exits, alliances):
         exit_country = exit_relay.get("country")
         trust = DEFAULT_TRUST
 
+        # TODO compare exit/guard and exit/destination
         for alliance in alliances:
             countries = alliance["countries"]
             if client_country in countries and exit_country in countries:
