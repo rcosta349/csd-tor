@@ -3,17 +3,16 @@ from path_selection import select_path
 import geoip2.database
 import json
 
-#TODO VERIFICAR PARA QUE SERVER OS GUARD_PARAMS E EXIT_PARAMS E COMO USA-LOS CORRETAMENNTE
 GUARD_PARAMS = {
-    'safe_upper': 0.95,
+    'safe_upper': 0.80,
     'safe_lower': 2.0,
-    'accept_upper': 0.5,
+    'accept_upper': 0.35,
     'accept_lower': 5.0,
     'bandwidth_frac': 0.2
 }
 
 EXIT_PARAMS = {
-    'safe_upper': 0.95,
+    'safe_upper': 0.80,
     'safe_lower': 2.0,
     'accept_upper': 0.1,
     'accept_lower': 10.0,

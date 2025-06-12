@@ -6,8 +6,6 @@ def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_
     exits = [r for r in relays if is_exit_relay(r,dest_ip)]
     guards = relays[:]
 
-    #print(f"Total guards: {len(guards)}, exits: {len(exits)}, middles: {len(middles)}")
-
     # Guard Selection
     guard_security(client_country, guards, alliances)
     try:
@@ -54,7 +52,7 @@ def categorize_and_select(relays, params):
     safe_subset = select_until_bandwidth(
         safe,
         total_bw,
-        params.get("bandwidth_frac", 0.3),
+        params.get("bandwidth_frac", 0.2),
         label="SAFE"
     )
     if safe_subset:
@@ -65,7 +63,7 @@ def categorize_and_select(relays, params):
     accept_subset = select_until_bandwidth(
         acceptable,
         total_bw,
-        params.get("bandwidth_frac", 0.3),
+        params.get("bandwidth_frac", 0.2),
         label="ACCEPTABLE"
     )
     if accept_subset:
@@ -80,7 +78,7 @@ def select_until_bandwidth(relays, total_bw, threshold_frac, label="", max_relay
     current_bw = 0
     target_bw = threshold_frac * total_bw
 
-    for r in relays[:max_relays]:  # Só os top N
+    for r in relays[:max_relays]:  # Only the top N
         selected.append(r)
         current_bw += r["bandwidth"]["measured"]
         if current_bw >= target_bw:
