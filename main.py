@@ -37,7 +37,7 @@ def main():
     for r in relays:
         r["country"] = get_country(r["ip"], reader)
 
-    path = select_path(relays, alliances, client_country, dest_country, GUARD_PARAMS, EXIT_PARAMS)
+    path = select_path(relays, alliances, client_country, dest_country, dest_ip, GUARD_PARAMS, EXIT_PARAMS)
 
     with open("output/selected_path.json", "w") as f:
         json.dump(path, f, indent=2)

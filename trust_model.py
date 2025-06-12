@@ -1,3 +1,4 @@
+from utils import is_in_family
 
 DEFAULT_TRUST = 0.5
 
@@ -30,13 +31,19 @@ def exit_security(client_country, dest_country, guard, exits, alliances):
                 trust = alliance["trust"]
                 break
 
-        if exit_country == guard.get("country"):
+        if is_in_family(guard["fingerprint"], exit_relay):
+            trust *= 0.1
+
+        if exit_relay.get("asn") == guard.get("asn"):
             trust *= 0.2
+
+        if exit_country == guard.get("country"):
+            trust *= 0.4
 
         if exit_country == dest_country:
-            trust *= 0.2
+            trust *= 0.5
 
         if exit_country == client_country:
-            trust *= 0.2
+            trust *= 0.4
 
         exit_relay["trust"] = trust

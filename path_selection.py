@@ -2,10 +2,9 @@ from trust_model import guard_security, exit_security
 import random
 from utils import is_exit_relay
 
-def select_path(relays, alliances, client_country, dest_country, guard_params, exit_params):
-    exits = [r for r in relays if is_exit_relay(r)]
+def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_params, exit_params):
+    exits = [r for r in relays if is_exit_relay(r,dest_ip)]
     guards = relays[:]
-    middles = relays[:]
 
     #print(f"Total guards: {len(guards)}, exits: {len(exits)}, middles: {len(middles)}")
 
@@ -15,6 +14,9 @@ def select_path(relays, alliances, client_country, dest_country, guard_params, e
     # TODO organize with categorize_and_select
     best_guard = guards_sorted[0]
 
+    #Remove guard from exists list
+    exclude_fingerprints = {best_guard["fingerprint"]}
+    exits = [e for e in exits if e["fingerprint"] not in exclude_fingerprints]
 
     # Exit Selection
     exit_security(client_country, dest_country, best_guard, exits, alliances)
@@ -22,15 +24,16 @@ def select_path(relays, alliances, client_country, dest_country, guard_params, e
     # TODO organize with categorize_and_select
     best_exit = exits_sorted[0]
 
-
     # Remove guard and exit of middles list
     exclude_fingerprints = {best_guard["fingerprint"], best_exit["fingerprint"]}
-    middles = [m for m in middles if m["fingerprint"] not in exclude_fingerprints]
+    middles = [m for m in relays if m["fingerprint"] not in exclude_fingerprints]
 
     # Random Middle
     # TODO improve middle selection (maybe not necessary)
     middle = random.choice(middles)
 
+
+    #TODO antes de retornar verificar se o middle está no mesmo ASN ou familia que o guard ou exit, caso esteja escolhe outro aleatoriamente e volta a verificar, max 20 tentativas
     return {
         "guard": best_guard["fingerprint"],
         "middle": middle["fingerprint"],
