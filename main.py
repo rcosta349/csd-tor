@@ -32,7 +32,9 @@ def main():
     # GeoIP setup
     reader = geoip2.database.Reader("GeoLite2-Country.mmdb")
     client_country = get_country(client_ip, reader)
+    print("Client country:", client_country)
     dest_country = get_country(dest_ip, reader)
+    print("Destination country:", dest_country)
 
     # Atribuir país aos relays
     for r in relays:

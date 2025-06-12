@@ -8,7 +8,7 @@
         "MZ",
         "ST"
       ],
-      "trust": 0.25
+      "trust": 0.3
     },
     {
       "countries": [
@@ -22,7 +22,7 @@
         "PT",
         "CN"
       ],
-      "trust": 0.4
+      "trust": 0.95
     },
     {
       "countries": [

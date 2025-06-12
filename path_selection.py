@@ -10,9 +10,11 @@ def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_
 
     # Guard Selection
     guard_security(client_country, guards, alliances)
-    guards_sorted = sorted(guards, key=lambda g: g["trust"], reverse=True)
-    # TODO organize with categorize_and_select
-    best_guard = guards_sorted[0]
+    try:
+        best_guard = categorize_and_select(guards,guard_params)
+    except:
+        guards_sorted = sorted(guards, key=lambda g: g["trust"], reverse=True)
+        best_guard = guards_sorted[0]
 
     #Remove guard from exists list
     exclude_fingerprints = {best_guard["fingerprint"]}
@@ -20,16 +22,17 @@ def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_
 
     # Exit Selection
     exit_security(client_country, dest_country, best_guard, exits, alliances)
-    exits_sorted = sorted(exits, key=lambda e: e["trust"], reverse=True)
-    # TODO organize with categorize_and_select
-    best_exit = exits_sorted[0]
+    try:
+        best_exit = categorize_and_select(exits,exit_params)
+    except:
+        exits_sorted = sorted(exits, key=lambda e: e["trust"], reverse=True)
+        best_exit = exits_sorted[0]
 
     # Remove guard and exit of middles list
     exclude_fingerprints = {best_guard["fingerprint"], best_exit["fingerprint"]}
     middles = [m for m in relays if m["fingerprint"] not in exclude_fingerprints]
 
-    # Random Middle
-    # TODO improve middle selection (maybe not necessary)
+    # Random Middle node, improving efficiency
     middle = random.choice(middles)
 
 
@@ -42,6 +45,7 @@ def select_path(relays, alliances, client_country, dest_country, dest_ip, guard_
 
 
 def categorize_and_select(relays, params):
+    #Sort relays by descending trust score
     sorted_relays = sorted(relays, key=lambda r: r["trust"], reverse=True)
     total_bw = sum(r["bandwidth"]["measured"] for r in sorted_relays)
 
@@ -50,28 +54,43 @@ def categorize_and_select(relays, params):
 
     # SAFE
     safe = filter_by_score(params["safe_upper"])
-    safe_subset = select_until_bandwidth(safe, total_bw, params["bandwidth_frac"], label="SAFE")
+    safe_subset = select_until_bandwidth(
+        safe,
+        total_bw,
+        params.get("bandwidth_frac", 0.3),
+        label="SAFE"
+    )
     if safe_subset:
         return random.choices(safe_subset, weights=[r["bandwidth"]["measured"] for r in safe_subset])[0]
 
     # ACCEPTABLE
     acceptable = filter_by_score(params["accept_upper"])
-    accept_subset = select_until_bandwidth(acceptable, total_bw, params["bandwidth_frac"], label="ACCEPTABLE")
+    accept_subset = select_until_bandwidth(
+        acceptable,
+        total_bw,
+        params.get("bandwidth_frac", 0.3),
+        label="ACCEPTABLE"
+    )
     if accept_subset:
         return random.choices(accept_subset, weights=[r["bandwidth"]["measured"] for r in accept_subset])[0]
 
-    raise Exception("Nenhum relay satisfaz os parâmetros.")
+    raise Exception("No relay satisfies the defined parameters.")
 
 
-def select_until_bandwidth(relay_scores, total_bw, threshold_frac, label=""):
+# it will select the top 15 relays - (max_relays = 15)
+def select_until_bandwidth(relays, total_bw, threshold_frac, label="", max_relays=15):
     selected = []
     current_bw = 0
+    target_bw = threshold_frac * total_bw
 
-    for r, _ in relay_scores:
+    for r in relays[:max_relays]:  # Só os top N
         selected.append(r)
         current_bw += r["bandwidth"]["measured"]
-        if current_bw >= threshold_frac * total_bw:
+        if current_bw >= target_bw:
             break
 
-    print(f"[{label}] Selected {len(selected)} relays, accumulated_bw: {current_bw}, target: {threshold_frac * total_bw}")
+    #### Analise
+    avg_trust = sum(r["trust"] for r in selected) / len(selected) if selected else 0
+    print(f"[{label}] Selected {len(selected)} relays, accumulated_bw: {current_bw}, target: {threshold_frac * total_bw:.0f}, avg_trust: {avg_trust:.2f}")
+    ####
     return selected if current_bw >= threshold_frac * total_bw else []
