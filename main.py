@@ -23,7 +23,6 @@ def main():
     relays = load_json_file("data/tor_consensus.json")
     config = load_json_file("data/Project2ClientInput.json")
     alliances = config["Alliances"]
-    #alliances = build_pairwise_trust_map(config["Alliances"]) #{'PT': {'BR': 0.25, 'AO': 0.25, 'MZ': 0.25, 'ST': 0.25, 'CN': 0.4}, 'BR': {'PT': 0.25, 'AO': 0.25, 'MZ': 0.25, 'ST': 0.25}, 'AO': {'PT': 0.25, 'BR': 0.25, 'MZ': 0.25, 'ST': 0.25}, ...
 
     client_ip = config["Client"]
     dest_ip = config["Destination"]

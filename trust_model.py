@@ -24,19 +24,23 @@ def exit_security(client_country, dest_country, guard, exits, alliances):
     for exit_relay in exits:
         exit_country = exit_relay.get("country")
         trust = DEFAULT_TRUST
-        has_trust = False
 
         for alliance in alliances:
             countries = alliance["countries"]
-            if client_country in countries and exit_country in countries:
-                has_trust = True
+            if client_country in countries and exit_country in countries and guard["country"] in countries:
                 trust = alliance["trust"]
-            if guard["country"] in countries and exit_country in countries:
-                if has_trust:
-                    trust *= alliance["trust"]
-                else:
-                    trust = alliance["trust"]
                 break
+            if client_country in countries and exit_country in countries and guard["country"] not in countries:
+                trust = alliance["trust"] * 0.9
+                break
+            if client_country in countries and exit_country not in countries and guard["country"] in countries:
+                trust = alliance["trust"] * 0.9
+                break
+            if client_country not in countries and exit_country in countries and guard["country"] in countries:
+                trust = alliance["trust"] * 0.9
+                break
+
+
 
         if is_in_family(guard["fingerprint"], exit_relay):
             trust *= 0.1

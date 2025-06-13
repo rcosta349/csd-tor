@@ -6,18 +6,6 @@ def is_in_family(fingerprint, relay):
     family_set = set(relay.get("family", []))
     return f"${fingerprint}" in family_set
 
-def build_pairwise_trust_map(alliances):
-    trust_map = defaultdict(dict)
-
-    for alliance in alliances:
-        countries = alliance["countries"]
-        trust = alliance["trust"]
-        for a in countries:
-            for b in countries:
-                if a != b:
-                    trust_map[a][b] = max(trust_map[a].get(b, 0), trust)
-    return trust_map
-
 def load_json_file(path):
     with open(path, "r") as f:
         return json.load(f)
