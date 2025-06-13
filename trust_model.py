@@ -40,8 +40,6 @@ def exit_security(client_country, dest_country, guard, exits, alliances):
                 trust = alliance["trust"] * 0.9
                 break
 
-
-
         if is_in_family(guard["fingerprint"], exit_relay):
             trust *= 0.1
 

@@ -2,6 +2,7 @@ from utils import load_json_file, get_country
 from path_selection import select_path
 import geoip2.database
 import json
+import time
 
 GUARD_PARAMS = {
     'safe_upper': 0.80,
@@ -20,6 +21,7 @@ EXIT_PARAMS = {
 }
 
 def main():
+    start_time = time.time()
     relays = load_json_file("data/tor_consensus.json")
     config = load_json_file("data/Project2ClientInput.json")
     alliances = config["Alliances"]
@@ -42,6 +44,9 @@ def main():
 
     with open("output/selected_path.json", "w") as f:
         json.dump(path, f, indent=2)
+
+    final_time = time.time() - start_time
+    print(f"execution time: {final_time:.2f} segundos")
 
 if __name__ == "__main__":
     main()
